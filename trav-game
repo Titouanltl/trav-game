@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trav-Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+        /* Style de base */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ff0066, #000);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: -webkit-linear-gradient(#ff3399, #ff6699);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        input, button {
+            padding: 0.8rem 1.2rem;
+            margin: 0.5rem;
+            font-size: 1rem;
+            border-radius: 15px;
+            border: none;
+            transition: 0.3s;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        input {
+            border: 2px solid #ff6699;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff3399;
+        }
+
+        button {
+            background-color: #ff3399;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff6699;
+            transform: scale(1.05);
+        }
+
+        #playerList {
+            margin-top: 1rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        #playerList li {
+            margin: 0.5rem 0;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        #playerList li:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Animation pour les rôles attribués */
+        #roleContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: fadeInOut 5s ease-in-out;
+            z-index: 1000;
+            width: 90%;
+            max-width: 320px;
+        }
+
+        #roleExplanation {
+            font-size: 1rem;
+            color: #ff3399;
+            text-shadow: 1px 1px 4px #000;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            border: 2px solid #000;
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        #roleDisplay {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        #nextPlayer {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            color: #ff6699;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translate(-50%, -50%);
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1) translate(-50%, -50%);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(1) translate(-50%, -50%);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translate(-50%, -50%);
+            }
+        }
+
+        /* Compte à rebours */
+        #countdown {
+            font-size: 3rem;
+            color: white;
+            display: none;
+            z-index: 1001;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Révélation spéciale du Travelo */
+        #traveloReveal {
+            font-size: 2.5rem;
+            background-color: #ff3399;
+            padding: 1.5rem 2rem;
+            color: white;
+            border-radius: 15px;
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            animation: bigReveal 2s ease-in-out;
+            z-index: 1002;
+            width: 80%;
+            max-width: 320px;
+        }
+
+        @keyframes bigReveal {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Cadre des règles */
+        #rulesContainer {
+            position: fixed;
+            top: 10%;
+            right: 10px;
+            width: 90%;
+            max-width: 320px;
+            background-color: #8e2de2;
+            color: #ff66b2;
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1003;
+            display: none;
+            text-align: left;
+            overflow-y: auto;
+            height: 70%;
+        }
+
+        #rulesContainer h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        #rulesContainer p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        #rulesCloseBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Trav-Game</h1>
+
+    <label for="playerName">Nom du joueur :</label>
+    <input type="text" id="playerName" placeholder="Entrez le nom">
+    <button onclick="addPlayer()">Ajouter joueur</button>
+
+    <ul id="playerList"></ul>
+
+    <button onclick="startGame()" id="startBtn" disabled>Commencer le jeu</button>
+    <button onclick="revealRole()" id="nextBtn" class="hidden">Révéler le rôle du 1er joueur</button>
+    <button onclick="revealTravelo()" id="revealTraveloBtn" class="hidden">Révéler le Travelo</button>
+    <button onclick="restartGame()" id="restartBtn" class="hidden">Recommencer</button>
+    <button onclick="showRules()" id="rulesBtn">Afficher les règles</button>
+
+    <div id="roleContainer">
+        <div id="roleExplanation"></div>
+        <div id="roleDisplay"></div>
+        <div id="nextPlayer"></div>
+    </div>
+
+    <div id="countdown"></div>
+    <div id="traveloReveal"></div>
+
+    <div id="rulesContainer">
+        <button id="rulesCloseBtn" onclick="hideRules()">×</button>
+        <h2>Règles du Jeu</h2>
+        <p>
+            Parmi les hommes, se cache un Travelo. Démasquez-le pour remporter des points.
+            <br><br>
+            Le Travelo devra passer la journée en portant un string sous son pantalon. Les autres joueurs doivent découvrir qui est le Travelo.            <p>
+                À la fin de la journée, chaque joueur désigne une personne qu'il pense être le Travelo. Si un ou plusieurs joueurs ont sélectionné la bonne personne, ils remportent un point. Le Travelo, quant à lui, reçoit des points pour chaque joueur qui s'est trompé.
+                <br><br>
+                <strong>ATTENTION :</strong> Il est interdit de révéler son rôle aux autres avant la fin de la journée. Il est également interdit de baisser le pantalon des autres joueurs. Le Travelo est obligé de porter un string et SEULEMENT un string sous son pantalon.
+            </p>
+        </div>
+
+    <script>
+        let players = [];
+        let travelo = null;
+        let revealed = 0;
+
+        function addPlayer() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (playerName && !players.includes(playerName)) {
+                players.push(playerName);
+                const playerList = document.getElementById('playerList');
+                const li = document.createElement('li');
+                li.textContent = playerName;
+                playerList.appendChild(li);
+                document.getElementById('playerName').value = '';
+                document.getElementById('startBtn').disabled = players.length < 2;
+            }
+        }
+
+        function startGame() {
+            if (players.length < 2) return;
+            travelo = players[Math.floor(Math.random() * players.length)];
+            revealed = 0;
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+            document.getElementById('roleContainer').style.display = 'none';
+            document.getElementById('revealTraveloBtn').classList.add('hidden');
+            document.getElementById('restartBtn').classList.add('hidden');
+        }
+
+        function revealRole() {
+            if (revealed >= players.length) return;
+
+            const player = players[revealed];
+            const role = player === travelo ? 'Travelo' : 'Homme';
+            const roleContainer = document.getElementById('roleContainer');
+            const roleDisplay = document.getElementById('roleDisplay');
+            const roleExplanation = document.getElementById('roleExplanation');
+            const nextPlayerDisplay = document.getElementById('nextPlayer');
+
+            roleExplanation.textContent = (role === 'Travelo')
+                ? 'À toi d\'enfiler le string ! Ne te fais pas remarquer par les autres joueurs.'
+                : 'Démasque le Travelo !';
+
+            roleDisplay.textContent = `${player} est ${role}`;
+            nextPlayerDisplay.textContent = revealed + 1 < players.length
+                ? `Passe le téléphone à ${players[revealed + 1]}`
+                : 'Tous les rôles ont été attribués.';
+
+            roleContainer.style.display = 'block';
+            setTimeout(() => {
+                roleContainer.style.display = 'none';
+                revealed++;
+
+                if (revealed === players.length) {
+                    document.getElementById('nextBtn').classList.add('hidden');
+                    document.getElementById('revealTraveloBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('nextBtn').textContent = 'Révéler le rôle du prochain joueur';
+                }
+            }, 5000);
+        }
+
+        function revealTravelo() {
+            const countdown = document.getElementById('countdown');
+            countdown.style.display = 'block';
+            let counter = 3;
+
+            const interval = setInterval(() => {
+                countdown.textContent = counter;
+                counter--;
+                if (counter < 0) {
+                    clearInterval(interval);
+                    countdown.style.display = 'none';
+                    showTravelo();
+                }
+            }, 1000);
+        }
+
+        function showTravelo() {
+            const traveloReveal = document.getElementById('traveloReveal');
+            traveloReveal.textContent = `${travelo} était le Travelo !`;
+            traveloReveal.style.display = 'block';
+            document.getElementById('restartBtn').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            players = [];
+            travelo = null;
+            revealed = 0;
+
+            // Réinitialisation de l'affichage
+            document.getElementById('playerList').innerHTML = '';
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('revealTraveloBtn').classList.add('hidden');
+            document.getElementById('restartBtn').classList.add('hidden');
+            document.getElementById('roleContainer').style.display = 'none';
+            document.getElementById('countdown').style.display = 'none';
+            document.getElementById('traveloReveal').style.display = 'none';
+
+            // Réinitialisation des éléments
+            document.getElementById('startBtn').disabled = true;
+        }
+
+        function showRules() {
+            document.getElementById('rulesContainer').style.display = 'block';
+        }
+
+        function hideRules() {
+            document.getElementById('rulesContainer').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
